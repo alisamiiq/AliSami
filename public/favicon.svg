@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="grad" x1="8" y1="56" x2="56" y2="6" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#2563eb" />
+      <stop offset="1" stop-color="#22d3ee" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#22d3ee" stop-opacity="0.9" />
+      <stop offset="1" stop-color="#22d3ee" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+
+  <!-- Background tile for contrast on dark/light tabs -->
+  <rect width="64" height="64" rx="14" fill="#05070d" />
+
+  <!-- A: Circuit Traces -->
+  <path d="M9 54 L32 6 L55 54" stroke="url(#grad)" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- S: Data Path & Crossbar -->
+  <path d="M41.6 26 H30 L26 30 L30 34 H38 L42 38 L38 42 H14.7" stroke="#ffffff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round" />
+
+  <!-- Solder Joints -->
+  <circle cx="41.6" cy="26" r="2.3" fill="#ffffff" />
+  <circle cx="14.7" cy="42" r="2.3" fill="#ffffff" />
+
+  <!-- Base Solder Pads -->
+  <circle cx="9" cy="54" r="3.2" fill="url(#grad)" />
+  <circle cx="55" cy="54" r="3.2" fill="url(#grad)" />
+
+  <!-- Apex Neuron Glow & Node -->
+  <circle cx="32" cy="6" r="8" fill="url(#glow)" />
+  <circle cx="32" cy="6" r="3.6" fill="#22d3ee" />
+</svg>
