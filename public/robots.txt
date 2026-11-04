@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://alisami.me/sitemap.xml
+Sitemap: https://ali-sami.vercel.app/sitemap.xml
