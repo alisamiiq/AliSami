@@ -115,6 +115,21 @@ export function Contact() {
                   <label htmlFor="contact-topic" className="form-label">
                     {t.contact.topic}
                   </label>
+                  <div className="quick-topics-row" role="group" aria-label={t.contact.topic}>
+                    {t.contact.quickTopics.map((qt) => {
+                      const isSelected = topic === qt;
+                      return (
+                        <button
+                          key={qt}
+                          type="button"
+                          className={`quick-topic-chip ${isSelected ? 'is-selected' : ''}`}
+                          onClick={() => setTopic(isSelected ? '' : qt)}
+                        >
+                          {qt}
+                        </button>
+                      );
+                    })}
+                  </div>
                   <input
                     id="contact-topic"
                     type="text"

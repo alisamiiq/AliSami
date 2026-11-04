@@ -46,6 +46,11 @@ export function Studies() {
             const Icon = area.icon;
             return (
               <Reveal key={idx} delay={idx * 0.1} className="pillar-card">
+                <div className="pillar-card-glow" aria-hidden="true" />
+                <div className="pillar-card-pattern" aria-hidden="true" />
+                <div className="pillar-watermark" aria-hidden="true">
+                  <Icon size={135} />
+                </div>
                 <div className="pillar-header">
                   <div className="pillar-icon-box">
                     <Icon size={24} className="text-electric" />

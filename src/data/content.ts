@@ -221,6 +221,7 @@ export const projects: Project[] = [
     tech: ['React', 'TypeScript', 'Vite', 'Motion', 'CSS'],
     image: '/projects/web.jpg',
     liveUrl: '/',
+    sourceUrl: 'https://github.com/alisamiiq/AliSami',
   },
   {
     id: 'example-ai-assistant',

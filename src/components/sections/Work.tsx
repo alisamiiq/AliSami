@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { usePrefs } from '../../context/Preferences';
 import { projects, projectCategories, type Project, type ProjectCategory } from '../../data/content';
 import { SectionHeader } from '../ui/SectionHeader';
+import { SocialIcon } from '../ui/SocialIcon';
 import { ExternalLink, Info, X, Sparkles, Layers } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 
@@ -148,6 +149,18 @@ export function Work() {
                           <span>{t.work.visit}</span>
                         </a>
                       )}
+
+                      {project.sourceUrl && (
+                        <a
+                          href={project.sourceUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="btn-card-action visit"
+                        >
+                          <SocialIcon id="github" size={15} />
+                          <span>{t.work.source}</span>
+                        </a>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -227,6 +240,17 @@ export function Work() {
                   >
                     <span>{t.work.visit}</span>
                     <ExternalLink size={16} />
+                  </a>
+                )}
+                {selectedProject.sourceUrl && (
+                  <a
+                    href={selectedProject.sourceUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn btn-secondary"
+                  >
+                    <SocialIcon id="github" size={16} />
+                    <span>{t.work.source}</span>
                   </a>
                 )}
                 <button

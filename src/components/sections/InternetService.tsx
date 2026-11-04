@@ -29,6 +29,11 @@ export function InternetService() {
             const Icon = feat.icon;
             return (
               <Reveal key={idx} delay={idx * 0.08} className="internet-card">
+                <div className="internet-card-glow" aria-hidden="true" />
+                <div className="internet-card-pattern" aria-hidden="true" />
+                <div className="internet-watermark" aria-hidden="true">
+                  <Icon size={125} />
+                </div>
                 <div className="internet-icon-box">
                   <Icon size={24} className="text-electric" />
                 </div>

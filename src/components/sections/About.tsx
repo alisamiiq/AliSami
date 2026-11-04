@@ -1,12 +1,37 @@
+import { useState } from 'react';
 import { site } from '../../config/site';
 import { usePrefs } from '../../context/Preferences';
 import { aboutText, interests } from '../../data/content';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Reveal } from '../ui/Reveal';
-import { Terminal, Sparkles } from 'lucide-react';
+import { useToast } from '../ui/Toast';
+import { Terminal, Sparkles, Copy, Check } from 'lucide-react';
 
 export function About() {
   const { t, tr } = usePrefs();
+  const showToast = useToast();
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyProfile = async () => {
+    const code = [
+      'const developer = {',
+      `  ${t.about.termName}: "${site.name.en} (${site.name.ar})",`,
+      `  ${t.about.termStudy}: "${tr(site.study.major)}",`,
+      `  ${t.about.termWork}: "${t.about.termWorkValue}",`,
+      `  ${t.about.termLocation}: "${tr(site.locationShort)}",`,
+      `  ${t.about.termFocus}: ["AI", "Web", "Networks"]`,
+      '};',
+    ].join('\n');
+
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      showToast(t.about.copiedCode, 'success');
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      /* ignore clipboard error */
+    }
+  };
 
   return (
     <section id="about" className="section-padding about-section" data-float-scale="0.95">
@@ -42,6 +67,16 @@ export function About() {
                   <Terminal size={14} />
                   <span>{t.about.terminalTitle}</span>
                 </div>
+                <button
+                  type="button"
+                  className={`terminal-copy-btn ${copied ? 'is-copied' : ''}`}
+                  onClick={handleCopyProfile}
+                  aria-label={t.about.copyCode}
+                  title={t.about.copyCode}
+                >
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  <span>{copied ? t.about.copiedCode : t.about.copyCode}</span>
+                </button>
               </div>
               <div className="terminal-body" dir="ltr">
                 <p className="code-line"><span className="code-kw">const</span> developer = &#123;</p>

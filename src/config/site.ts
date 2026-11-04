@@ -10,7 +10,7 @@
 import type { L } from '../i18n/types';
 
 export interface SocialLink {
-  id: 'facebook' | 'telegram' | 'whatsapp';
+  id: 'facebook' | 'telegram' | 'whatsapp' | 'github';
   label: L;
   handle: string;
   url: string;
@@ -59,6 +59,12 @@ export const site = {
       label: { ar: 'واتساب', en: 'WhatsApp' },
       handle: '@bc.9',
       url: 'https://wa.me/bc.9',
+    },
+    {
+      id: 'github',
+      label: { ar: 'جيت هاب', en: 'GitHub' },
+      handle: 'alisamiiq',
+      url: 'https://github.com/alisamiiq',
     },
   ] satisfies SocialLink[],
 

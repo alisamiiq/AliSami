@@ -60,6 +60,8 @@ const ar = {
     termLocation: 'الموقع',
     termWorkValue: 'وكيل ومزوّد خدمة إنترنت',
     termFocus: 'الاهتمامات',
+    copyCode: 'نسخ الكود',
+    copiedCode: 'تم النسخ',
   },
   services: {
     eyebrow: 'الخدمات',
@@ -125,6 +127,7 @@ const ar = {
     topic: 'الموضوع',
     topicGeneral: 'استفسار عام',
     topicInternet: 'خدمة الإنترنت',
+    quickTopics: ['تصميم وتطوير موقع', 'اشتراك إنترنت', 'دعم فني وشبكات', 'استفسار عام'],
     message: 'رسالتك',
     placeholder: 'اكتب رسالتك هنا…',
     sendWhatsapp: 'إرسال عبر واتساب',
@@ -203,6 +206,8 @@ const en: UIStrings = {
     termLocation: 'location',
     termWorkValue: 'Internet service agent & provider',
     termFocus: 'focus',
+    copyCode: 'Copy code',
+    copiedCode: 'Copied',
   },
   services: {
     eyebrow: 'Services',
@@ -268,6 +273,7 @@ const en: UIStrings = {
     topic: 'Topic',
     topicGeneral: 'General inquiry',
     topicInternet: 'Internet service',
+    quickTopics: ['Website development', 'Internet subscription', 'Tech & network support', 'General inquiry'],
     message: 'Your message',
     placeholder: 'Write your message…',
     sendWhatsapp: 'Send via WhatsApp',

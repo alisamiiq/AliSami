@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Logo } from '../brand/Logo';
 import { usePrefs } from '../../context/Preferences';
-import { useActiveSection, useScrolledPast } from '../../hooks/useScroll';
+import { useActiveSection, useScrolledPast, useScrollProgress } from '../../hooks/useScroll';
 import { Moon, Sun, Languages, Menu, X, Play, Pause } from 'lucide-react';
 
 const NAV_ITEMS = [
@@ -17,6 +17,7 @@ export function Navbar() {
   const { theme, motion, t, toggleLang, toggleTheme, toggleMotion } = usePrefs();
   const [mobileOpen, setMobileOpen] = useState(false);
   const isScrolled = useScrolledPast(40);
+  const scrollProgress = useScrollProgress();
   const activeSection = useActiveSection(NAV_ITEMS.map((item) => item.id));
 
   // Lock body scroll when mobile drawer is open
@@ -38,6 +39,14 @@ export function Navbar() {
       className={`site-header ${isScrolled ? 'is-scrolled' : ''}`}
       data-float-header
     >
+      {/* Glowing Top Scroll Progress Bar */}
+      <div className="scroll-progress-track" aria-hidden="true">
+        <div
+          className="scroll-progress-bar"
+          style={{ transform: `scaleX(${scrollProgress})` }}
+        />
+      </div>
+
       <a href="#main-content" className="skip-link">
         {t.a11y.skip}
       </a>
