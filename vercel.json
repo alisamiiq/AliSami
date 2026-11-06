@@ -1,9 +1,8 @@
 {
   "headers": [
     {
-      "source": "/blog/posts.json",
+      "source": "/blog/(.*)\\.json",
       "headers": [{ "key": "Cache-Control", "value": "no-cache, must-revalidate" }]
     }
   ]
 }
-

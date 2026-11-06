@@ -66,8 +66,11 @@ if (cmd === 'info') {
   console.log('setWebhook:', r.ok ? 'OK' : r.description);
   const cmds = await tg('setMyCommands', {
     commands: [
-      { command: 'start', description: 'طريقة النشر' },
-      { command: 'posts', description: 'آخر المنشورات (مع زر حذف)' },
+      { command: 'panel', description: '🎛 لوحة التحكم الشاملة بالموقع والمدونة' },
+      { command: 'posts', description: '📝 إدارة المقالات (تثبيت، إخفاء، تعديل، حذف)' },
+      { command: 'sections', description: '🧩 إظهار أو إخفاء أقسام الموقع' },
+      { command: 'stats', description: '📊 إحصائيات الموقع والمدونة' },
+      { command: 'start', description: 'ℹ️ طريقة النشر والتعليمات' },
     ],
   });
   console.log('setMyCommands:', cmds.ok ? 'OK' : cmds.description);

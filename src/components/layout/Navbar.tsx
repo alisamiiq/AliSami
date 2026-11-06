@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Logo } from '../brand/Logo';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { useActiveSection, useScrolledPast, useScrollProgress } from '../../hooks/useScroll';
 import { Moon, Sun, Languages, Menu, X, Play, Pause } from 'lucide-react';
 
@@ -16,10 +17,12 @@ const NAV_ITEMS = [
 
 export function Navbar() {
   const { theme, motion, t, toggleLang, toggleTheme, toggleMotion } = usePrefs();
+  const { isSectionVisible, blogHubOpen, openBlogHub } = useSiteConfig();
   const [mobileOpen, setMobileOpen] = useState(false);
   const isScrolled = useScrolledPast(40);
   const scrollProgress = useScrollProgress();
-  const activeSection = useActiveSection(NAV_ITEMS.map((item) => item.id));
+  const visibleItems = NAV_ITEMS.filter((item) => isSectionVisible(item.id));
+  const activeSection = useActiveSection(visibleItems.map((item) => item.id));
 
   // Lock body scroll when mobile drawer is open
   useEffect(() => {
@@ -66,13 +69,20 @@ export function Navbar() {
         {/* Desktop Navigation */}
         <nav className="desktop-nav" aria-label="Main Navigation">
           <ul className="nav-list">
-            {NAV_ITEMS.map((item) => {
-              const isActive = activeSection === item.id;
+            {visibleItems.map((item) => {
+              const isBlog = item.id === 'blog';
+              const isActive = isBlog ? blogHubOpen : activeSection === item.id;
               return (
                 <li key={item.id} className="nav-item">
                   <a
-                    href={`#${item.id}`}
+                    href={isBlog ? '#blog-hub' : `#${item.id}`}
                     className={`nav-link ${isActive ? 'is-active' : ''}`}
+                    onClick={(e) => {
+                      if (isBlog) {
+                        e.preventDefault();
+                        openBlogHub();
+                      }
+                    }}
                   >
                     {t.nav[item.labelKey]}
                     {isActive && <span className="active-dot" aria-hidden="true" />}
@@ -141,17 +151,26 @@ export function Navbar() {
         <div className="drawer-panel">
           <nav className="drawer-nav">
             <ul className="drawer-list">
-              {NAV_ITEMS.map((item) => (
-                <li key={item.id}>
-                  <a
-                    href={`#${item.id}`}
-                    className="drawer-link"
-                    onClick={closeMobile}
-                  >
-                    {t.nav[item.labelKey]}
-                  </a>
-                </li>
-              ))}
+              {visibleItems.map((item) => {
+                const isBlog = item.id === 'blog';
+                return (
+                  <li key={item.id}>
+                    <a
+                      href={isBlog ? '#blog-hub' : `#${item.id}`}
+                      className="drawer-link"
+                      onClick={(e) => {
+                        closeMobile();
+                        if (isBlog) {
+                          e.preventDefault();
+                          openBlogHub();
+                        }
+                      }}
+                    >
+                      {t.nav[item.labelKey]}
+                    </a>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
         </div>

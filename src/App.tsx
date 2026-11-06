@@ -9,31 +9,38 @@ import { Blog } from './components/sections/Blog';
 import { Contact } from './components/sections/Contact';
 import { Footer } from './components/layout/Footer';
 import { FloatingLogo } from './features/floating-logo/FloatingLogo';
+import { SiteConfigProvider, useSiteConfig } from './context/SiteConfig';
+
+function MainSections() {
+  const { isSectionVisible } = useSiteConfig();
+
+  return (
+    <main id="main-content">
+      <Hero />
+      {isSectionVisible('about') && <About />}
+      {isSectionVisible('services') && <Services />}
+      {isSectionVisible('work') && <Work />}
+      {isSectionVisible('studies') && <Studies />}
+      {isSectionVisible('internet') && <InternetService />}
+      <Blog />
+      {isSectionVisible('contact') && <Contact />}
+    </main>
+  );
+}
 
 export function App() {
   return (
-    <>
+    <SiteConfigProvider>
       {/* Background/Mid-layer Interactive Flying Logo */}
       <FloatingLogo />
 
       {/* Main App Layout */}
       <div className="site-wrapper">
         <Navbar />
-
-        <main id="main-content">
-          <Hero />
-          <About />
-          <Services />
-          <Work />
-          <Studies />
-          <InternetService />
-          <Blog />
-          <Contact />
-        </main>
-
+        <MainSections />
         <Footer />
       </div>
-    </>
+    </SiteConfigProvider>
   );
 }
 
