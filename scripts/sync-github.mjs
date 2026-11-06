@@ -64,7 +64,7 @@ async function gh(endpoint, options = {}) {
     headers: {
       Authorization: `token ${token}`,
       Accept: 'application/vnd.github.v3+json',
-      'User-Agent': 'Antigravity-Sync',
+      'User-Agent': 'AliSami-Sync',
       ...(options.headers || {})
     }
   });

@@ -1,91 +1,74 @@
-# دليل تشغيل وتخصيص ونشر موقع علي سامي | Ali Sami — Digital Technologies
+# Ali Sami — علي سامي
 
-تم بناء موقعك الشخصي كمنصة رقمية متكاملة وفخمة تجمع بين **هندسة تقنيات الذكاء الاصطناعي**، **تطوير المواقع والحلول الرقمية**، و**خدمات الإنترنت والشبكات في البراكية — الكوفة**.
+🌐 **Live Website:** [ali-sami.vercel.app](https://ali-sami.vercel.app)
 
----
+موقعي الشخصي ومعرض أعمالي — أشارك فيه مشاريعي البرمجية، مقالاتي التقنية، والخدمات التي أقدمها في تطوير الويب والشبكات وخدمات الإنترنت في منطقة البراكية (الكوفة - النجف الأشرف).
 
-## 1. الهوية البصرية والمميزات الرئيسية المنفذة
-
-1. **الشعار البرمجي الأصلي (A / S):**
-   - تصميم هندسي مخصص يجمع الحرفين **A** و **S**.
-   - ساقا الحرف **A** تمثلان مسارات إلكترونية (Circuit Traces) ترتفع لتلتقي عند عقدة عصبية ذكية (Neuron Apex Node) مضيئة.
-   - الحرف **S** مصمم كمسار بيانات PCB ثماني الاتجاهات يشكل الجسر الرابط (Crossbar) بين الساقين كرمز لشبكات الاتصال.
-   - مزود بنسخة أيقونة موقع فكتوريا `favicon.svg`.
-
-2. **الشعار الطائر التفاعلي (Floating Logo Engine):**
-   - محرك برمجي مخصص ومبني بالأكواد في [engine.ts](file:///c:/Users/ali%20sami/OneDrive/Desktop/Q-كيو/src/features/floating-logo/engine.ts).
-   - يتحرك الشعار بسلاسة داخل **المساحات الفارغة فقط** عبر منحنيات Bézier طبيعية وحركة تذبذب ناعمة.
-   - يتفاعل مع اتجاه التمرير (Scroll Direction)، ويتغير حجمه ومساره بين الأقسام.
-   - يتفاعل بلطف مع حركة مؤشر الماوس على أجهزة الحاسوب دون أي إزعاج.
-   - **أمان المحتوى:** الشعار يقع في طبقة مستقلة خلف المحتوى التفاعلي (`pointer-events: none`) مع خاصية التلاشي التلقائي كشبح (Ghost fade) إذا مر بالقرب من أي نص أو زر.
-   - يتضمن خياراً لتعطيل الحركة، ويحترم إعدادات `prefers-reduced-motion`، ويعمل بنسخة خفيفة وموفرة للطاقة على الهواتف.
-
-3. **دعم كامل للغتين (العربية والإنجليزية):**
-   - العربية هي اللغة الأساسية مع اتجاه **RTL** وخط **IBM Plex Sans Arabic**.
-   - التبديل الفوري إلى الإنجليزية **LTR** مع خط **Sora**.
-   - دعم حفظ التفضيل وتغيير وسم الصفحة وعنوانها وبيانات SEO تلقائياً.
-
-4. **الوضع الداكن والفاتح (Dark / Light Mode):**
-   - الوضع الافتراضي داكن وفخم (Deep Obsidian & Electric Blue & Luminous Cyan).
-   - إمكانية التبديل إلى الوضع الفاتح مع تباين عالي ومريح للعين.
-
-5. **المصداقية والأمان في البيانات:**
-   - لم يتم اختلاق أي شهادات أو نسب مئوية وهمية أو أسعار وسرعات غير حقيقية.
-   - فصل البيانات بالكامل في ملفات تحكم قابلة للتعديل بسهولة.
-   - مشاريع المعرض التوضيحية مميزة بوضوح بوسم **"مثال توضيحي"**.
-   - رسائل التواصل تُرسل مباشرة عبر واتساب وتيليجرام بدون تخزين أي بيانات سرية أو خاصة للمستخدمين.
+Personal portfolio & technical blog — showcasing my web development work, AI engineering studies, and local ISP/network services in Al-Barakiya, Kufa.
 
 ---
 
-## 2. كيفية تعديل البيانات الشخصية والمحتوى
+## ⚡ نبذة عن المشروع | Overview
 
-تم فصل جميع البيانات في ملفين رئيسيين لتسهيل التعديل المستقبلي:
+قمت ببناء هذا الموقع ليكون واجهة سريعة وعصرية تعكس مجالات عملي ودراستي في **هندسة تقنيات الذكاء الاصطناعي** وتطوير تطبيقات الويب وإدارة الشبكات:
 
-### أ) معلومات التواصل والموقع: [src/config/site.ts](file:///c:/Users/ali%20sami/OneDrive/Desktop/Q-كيو/src/config/site.ts)
-- لتحديث رقم واتساب أو رابط المحادثة (الرابط الحالي المعتمد: `https://wa.me/bc.9`).
-- لتحديث حساب فيسبوك أو تيليجرام.
-- لإضافة أوقات العمل أو هاتف الخدمة أو مناطق التغطية متى ما توفرت (الحقول غير المكتوبة تبقى مخفية تلقائياً).
-
-### ب) نصوص الأقسام والخدمات والمشاريع: [src/data/content.ts](file:///c:/Users/ali%20sami/OneDrive/Desktop/Q-كيو/src/data/content.ts)
-- **heroRoles**: لتعديل العناوين المتحركة في واجهة الموقع.
-- **aboutText**: لتعديل النبذة الشخصية بالعربية والإنجليزية.
-- **services**: لإضافة أو تعديل أي خدمة وأيقونتها وتفاصيلها.
-- **projects**: لإضافة مشاريعك الجديدة الحقيقية وروابطها وحذف الأمثلة التجريبية.
-- **technologies.skills**: لإضافة أي أدوات أو تقنيات تتقنها مستقبلاً لتظهر في شريط المهارات.
+- **واجهة ثنائية اللغة (AR / EN):** دعم كامل للغتين العربية (RTL) والإنجليزية (LTR) مع تبديل فوري للثيم (Dark / Light).
+- **بوابة المدونة المستقلة (Blog Hub):** قسم مخصص للمقالات والتدوينات التقنية مع بحث فوري وتصنيفات، مرتبط بنظام نشر وإدارة مخصص عبر Telegram Webhook API.
+- **محاكي تفاعلي حي (Interactive Sandbox):** نافذة كود تفاعلية داخل الموقع تتيح تجربة محاكاة للشبكة العصبية ورادار الشبكة بشكل مباشر عبر HTML5 Canvas.
+- **حركة وتصميم مخصص:** شعار هندسي خاص (A/S) مع خلفية شبكية تفاعلية (Network Canvas) خفيفة على الأداء.
 
 ---
 
-## 3. تشغيل الموقع محلياً (Local Development)
+## 🛠️ التقنيات المستخدمة | Tech Stack
 
-افتح موجه الأوامر داخل مجلد المشروع ونفّذ:
+- **Frontend:** React 19, TypeScript, Vite
+- **Animations & Graphics:** Motion, HTML5 Canvas API, Lucide Icons
+- **Typography:** IBM Plex Sans Arabic, Sora, JetBrains Mono
+- **Backend / Serverless:** Vercel Serverless Functions (`api/`) + GitHub REST API
+- **Deployment:** Vercel
 
-```bash
-# تشغيل خادم التطوير المحلي
-npm run dev
+---
+
+## 📁 هيكلية المشروع | Project Structure
+
+```text
+├── api/                  # Serverless API routes (Telegram Bot Webhook & Live Stats)
+├── public/               # Static assets & blog data (posts.json, images)
+├── src/
+│   ├── components/       # UI, Layout & Page Sections (Hero, About, Work, Blog, etc.)
+│   ├── config/           # Site configuration & social links
+│   ├── context/          # Theme, Language & Site state providers
+│   ├── data/             # Portfolio projects, services & skills data
+│   ├── features/         # Interactive Floating Logo engine
+│   └── i18n/             # Arabic & English translations
+└── vercel.json           # Routing & caching headers
 ```
 
-سيظهر لك الرابط: `http://localhost:5173/` لتصفح الموقع مباشرة وتحديثه لحظياً عند حفظ أي تعديل.
+---
+
+## 🚀 التشغيل المحلي | Local Setup
+
+```bash
+# تثبيت الحزم
+npm install
+
+# تشغيل بيئة التطوير
+npm run dev
+
+# بناء نسخة الإنتاج
+npm run build
+```
 
 ---
 
-## 4. طريقة نشر الموقع مجاناً (Deployment Guide)
+## 📬 تواصل معي | Contact
 
-المشروع جاهز ومُحسّن للبناء الفوري بفضل نظام Vite. يمكنك نشره على منصات مثل **Vercel** أو **Netlify** أو **Cloudflare Pages**:
-
-### الخيار الأسرع (Vercel):
-1. ارفع المشروع إلى حسابك على GitHub.
-2. سجّل الدخول إلى موقع [Vercel](https://vercel.com).
-3. اختر **Add New Project** ثم اربطه بمستودع GitHub الخاص بالمشروع.
-4. سيتعرف Vercel تلقائياً على إعدادات Vite، اضغط **Deploy**.
-5. سيصبح موقعك متاحاً خلال ثوانٍ برابط عالمي مجاني وسريع جداً مزود بشهادة SSL (HTTPS).
+- **الموقع الرسمي:** [ali-sami.vercel.app](https://ali-sami.vercel.app)
+- **تيليجرام:** [@AliSamii_mu](https://t.me/AliSamii_mu)
+- **إنستغرام:** [@bc..9](https://www.instagram.com/bc..9)
+- **واتساب:** [تواصل مباشر](https://wa.me/bc.9)
+- **GitHub:** [@alisamiiq](https://github.com/alisamiiq)
 
 ---
 
-## 5. ربط دومين خاص (Custom Domain)
-
-إذا رغبت في حجز دومين باسمك مثل `alisami.iq` أو `alisami.me` أو `alisami.dev`:
-1. اشترِ النطاق من أي مسجّل نطاقات (مثل Namecheap أو Cloudflare أو مسجلي نطاق .iq في العراق).
-2. في لوحة تحكم Vercel أو Netlify، توجه إلى **Settings** > **Domains**.
-3. أضف الدومين الخاص بك (مثلاً `alisami.me`).
-4. ستظهر لك سجلات الـ DNS المطلوبة (عادةً سجل `A` يشير لـ `76.76.21.21` وسجل `CNAME` لـ `cname.vercel-dns.com`).
-5. أضف هذه السجلات في لوحة إدارة الدومين لديك، وسيتم تفعيل موقعك الشخصي على نطاقك الرسمي فوراً.
+© Ali Sami (علي سامي) — All Rights Reserved.
