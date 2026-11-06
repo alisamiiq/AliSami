@@ -58,7 +58,7 @@ export function Contact() {
     <section id="contact" className="section-padding contact-section" data-float-scale="1.0">
       <div className="container">
         <SectionHeader
-          index="06"
+          index="07"
           eyebrow={t.contact.eyebrow}
           title={t.contact.title}
           lead={t.contact.lead}

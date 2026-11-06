@@ -38,11 +38,16 @@ const IGNORED = new Set([
   '.DS_Store'
 ]);
 
+// Paths owned by the Telegram bot on GitHub — never overwritten from the local copy.
+const REMOTE_OWNED = ['public/blog'];
+
 function getFiles(dir) {
   const result = [];
   for (const entry of readdirSync(dir)) {
     if (IGNORED.has(entry) || entry.endsWith('.log')) continue;
     const full = join(dir, entry);
+    const rel = relative('.', full).replace(/\\/g, '/');
+    if (REMOTE_OWNED.some((p) => rel === p || rel.startsWith(p + '/'))) continue;
     const s = statSync(full);
     if (s.isDirectory()) {
       result.push(...getFiles(full));

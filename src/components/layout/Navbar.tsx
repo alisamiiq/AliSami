@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { id: 'work', labelKey: 'work' as const },
   { id: 'studies', labelKey: 'studies' as const },
   { id: 'internet', labelKey: 'internet' as const },
+  { id: 'blog', labelKey: 'blog' as const },
   { id: 'contact', labelKey: 'contact' as const },
 ];
 
