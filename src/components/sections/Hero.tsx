@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react';
 import { site } from '../../config/site';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { heroRoles, heroDescription, heroHighlights } from '../../data/content';
 import { NetworkCanvas } from '../background/NetworkCanvas';
 import { SocialIcon } from '../ui/SocialIcon';
-import { ArrowUpRight, ChevronDown, MapPin, Sparkles } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, MapPin, Newspaper, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LogoMark } from '../brand/Logo';
 
 export function Hero() {
   const { lang, t, tr } = usePrefs();
+  const { openBlogHub, isSectionVisible } = useSiteConfig();
   const [roleIndex, setRoleIndex] = useState(0);
 
   // Cycling animated roles headline
@@ -104,6 +106,17 @@ export function Hero() {
                 <span>{t.hero.explore}</span>
                 <ArrowUpRight size={18} />
               </a>
+              {isSectionVisible('blog') && (
+                <button
+                  type="button"
+                  className="btn btn-blog-hero"
+                  onClick={() => openBlogHub()}
+                >
+                  <Newspaper size={18} />
+                  <span>{t.blog.openHub}</span>
+                  <ArrowUpRight size={17} />
+                </button>
+              )}
               <a href="#contact" className="btn btn-secondary">
                 <span>{t.hero.contact}</span>
               </a>
