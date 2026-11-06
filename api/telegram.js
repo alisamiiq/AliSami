@@ -3,18 +3,22 @@
  *
  * Features:
  *  - Publish articles with title, body, cover image, and automatic #tags extraction.
+ *  - Live Website Visitor Counter (stored in refs/meta/stats on GitHub without triggering rebuilds).
+ *  - Multi-Admin System: Owner + added Admins (👥 إدارة المشرفين) can control everything.
  *  - Interactive Control Panel (/panel):
  *      • Pin / Unpin posts (📌) to feature them first.
  *      • Hide / Show posts (👁️ draft mode) without deleting.
  *      • Edit existing posts (✏️) by replying with updated text/photo.
  *      • Delete posts (🗑) along with their cover image.
  *      • Website Sections Toggle (🧩): show or hide any section of the website live.
- *      • Live Blog & Site Statistics (📊 /stats).
+ *      • Manage Admins (👥 /admins): add or remove co-admins by ID or forwarded message.
+ *      • Live Blog & Site Statistics + Visitor Counter (📊 /stats).
  */
 
 const POSTS_PATH = 'public/blog/posts.json';
 const SITE_CONFIG_PATH = 'public/blog/site-config.json';
 const IMAGES_DIR = 'public/blog/images';
+const STATS_REF = 'meta/stats';
 
 const SECTIONS = [
   { id: 'about', label: 'نبذة عني' },
@@ -102,16 +106,87 @@ async function readPosts() {
 async function readSiteConfig() {
   const { branch } = cfg();
   const file = await gh(`/contents/${SITE_CONFIG_PATH}?ref=${branch}`, { allow404: true });
-  if (!file) return { hiddenSections: [] };
+  if (!file) return { hiddenSections: [], admins: [] };
   try {
     const data = JSON.parse(Buffer.from(file.content, 'base64').toString('utf-8'));
     return {
       hiddenSections: Array.isArray(data?.hiddenSections) ? data.hiddenSections : [],
+      admins: Array.isArray(data?.admins) ? data.admins : [],
       updatedAt: data?.updatedAt,
     };
   } catch {
-    return { hiddenSections: [] };
+    return { hiddenSections: [], admins: [] };
   }
+}
+
+function isAuthorizedUser(userId, siteConfig) {
+  const { ownerId } = cfg();
+  const uid = String(userId || '').trim();
+  if (!uid) return false;
+  if (uid === ownerId) return true;
+  return (siteConfig?.admins || []).some((a) => String(a.id).trim() === uid);
+}
+
+/* ───────────── Live Visitor Counter (via refs/meta/stats — zero rebuilds!) ───────────── */
+function todayKey() {
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Baghdad' });
+}
+
+async function readVisitStats() {
+  try {
+    const ref = await gh(`/git/ref/${STATS_REF}`, { allow404: true });
+    if (!ref?.object?.sha) {
+      return { visits: 1, todayVisits: 1, day: todayKey() };
+    }
+    const blob = await gh(`/git/blobs/${ref.object.sha}`, { allow404: true });
+    if (!blob?.content) {
+      return { visits: 1, todayVisits: 1, day: todayKey() };
+    }
+    const parsed = JSON.parse(Buffer.from(blob.content, 'base64').toString('utf-8'));
+    const day = todayKey();
+    return {
+      visits: Number(parsed.visits) || 1,
+      todayVisits: parsed.day === day ? Number(parsed.todayVisits) || 1 : 0,
+      day,
+    };
+  } catch {
+    return { visits: 1, todayVisits: 1, day: todayKey() };
+  }
+}
+
+async function recordVisit(increment = true) {
+  const current = await readVisitStats();
+  const day = todayKey();
+  const next = {
+    visits: increment ? current.visits + 1 : current.visits,
+    todayVisits: increment ? (current.day === day ? current.todayVisits + 1 : 1) : current.todayVisits,
+    day,
+    updatedAt: new Date().toISOString(),
+  };
+
+  if (increment) {
+    try {
+      const blob = await gh('/git/blobs', {
+        method: 'POST',
+        body: JSON.stringify({ content: JSON.stringify(next), encoding: 'utf-8' }),
+      });
+      const existing = await gh(`/git/ref/${STATS_REF}`, { allow404: true });
+      if (existing?.object?.sha) {
+        await gh(`/git/refs/${STATS_REF}`, {
+          method: 'PATCH',
+          body: JSON.stringify({ sha: blob.sha, force: true }),
+        });
+      } else {
+        await gh('/git/refs', {
+          method: 'POST',
+          body: JSON.stringify({ ref: `refs/${STATS_REF}`, sha: blob.sha }),
+        });
+      }
+    } catch (e) {
+      console.error('Visit update error:', e.message);
+    }
+  }
+  return next;
 }
 
 /** files: [{ path, content (utf-8) } | { path, base64 } | { path, delete: true }] */
@@ -225,7 +300,7 @@ function formatPostSummary(post) {
   );
 }
 
-const HELP_TEXT = (id) => `<b>أهلاً علي 👋 مرحباً بك في مركز التحكم بموقعك ومدونتك.</b>
+const HELP_TEXT = (id) => `<b>أهلاً بك 👋 في مركز التحكم بموقع ومدونة علي سامي.</b>
 
 <b>✍️ طريقة النشر السريع في بوابة المدونة:</b>
 • أرسل رسالة: <b>السطر الأول عنوان المقال</b>، وما بعده نص المقال.
@@ -233,34 +308,40 @@ const HELP_TEXT = (id) => `<b>أهلاً علي 👋 مرحباً بك في مر
 • <b>إضافة صورة غلاف:</b> أرسل صورة مع المقال في التعليق (Caption)، أو أرسل الصورة أولاً ثم اضغط <b>رد (Reply)</b> عليها بالنص.
 
 <b>🎛 أوامر التحكم السريع:</b>
-/panel — لوحة التحكم الشاملة (المقالات + أقسام الموقع + الإحصائيات)
+/panel — لوحة التحكم الشاملة (المقالات + الزيارات + المشرفين + الأقسام)
 /posts — إدارة المنشورات (تثبيت 📌، إخفاء 👁️، تعديل ✏️، حذف 🗑)
-/sections — إظهار أو إخفاء أقسام الموقع بضغطة زر
-/stats — إحصائيات الموقع والمدونة
+/admins — إدارة المشرفين وإضافة أدمن جديد معك 👥
+/sections — إظهار أو إخفاء أقسام الموقع بضغطة زر 🧩
+/stats — إحصائيات وزيارات الموقع والمدونة 📊
+/id — عرض معرف حسابك الرقمي
 
-<code>Owner ID: ${id}</code>`;
+<code>ID: ${id}</code>`;
 
 async function buildPanelHome() {
   const { siteUrl } = cfg();
-  const [posts, siteConfig] = await Promise.all([readPosts(), readSiteConfig()]);
+  const [posts, siteConfig, visitData] = await Promise.all([readPosts(), readSiteConfig(), readVisitStats()]);
   const visibleCount = posts.filter((p) => !p.hidden).length;
   const pinnedCount = posts.filter((p) => p.pinned).length;
   const hiddenSecCount = siteConfig.hiddenSections.length;
+  const adminsCount = (siteConfig.admins || []).length + 1;
 
   const text =
-    `🎛 <b>لوحة التحكم بالموقع والمدونة</b>\n` +
+    `🎛 <b>لوحة التحكم الشاملة بالموقع والمدونة</b>\n` +
     `━━━━━━━━━━━━━━\n` +
+    `👁️ <b>زيارات الموقع:</b> ${visitData.visits.toLocaleString()} زيارة (اليوم: ${visitData.todayVisits})\n` +
     `📝 <b>المقالات المنشورة:</b> ${visibleCount} (المثبتة: ${pinnedCount} | المسودات: ${posts.length - visibleCount})\n` +
-    `🧩 <b>أقسام الموقع المفعلة:</b> ${SECTIONS.length - hiddenSecCount} من ${SECTIONS.length}\n\n` +
+    `🧩 <b>أقسام الموقع المفعلة:</b> ${SECTIONS.length - hiddenSecCount} من ${SECTIONS.length}\n` +
+    `👥 <b>المشرفون (Admins):</b> ${adminsCount}\n\n` +
     `اختر القسم الذي تود التحكم به:`;
 
   const reply_markup = {
     inline_keyboard: [
       [{ text: `📝 إدارة المنشورات (${posts.length})`, callback_data: 'panel:posts' }],
       [
-        { text: '🧩 إظهار / إخفاء أقسام الموقع', callback_data: 'panel:sections' },
-        { text: '📊 الإحصائيات', callback_data: 'panel:stats' },
+        { text: '👥 إدارة المشرفين (إضافة أدمن)', callback_data: 'panel:admins' },
+        { text: '🧩 أقسام الموقع', callback_data: 'panel:sections' },
       ],
+      [{ text: `📊 الإحصائيات والزيارات (${visitData.visits})`, callback_data: 'panel:stats' }],
       [
         { text: '🌐 فتح الموقع', url: siteUrl },
         { text: '📖 فتح بوابة المدونة', url: `${siteUrl}/#blog-hub` },
@@ -269,6 +350,39 @@ async function buildPanelHome() {
   };
 
   return { text, reply_markup };
+}
+
+async function buildAdminsPanel() {
+  const { ownerId } = cfg();
+  const siteConfig = await readSiteConfig();
+  const admins = siteConfig.admins || [];
+
+  const adminLines = [
+    `👑 <b>المالك الأساسي:</b> <code>${ownerId}</code> (تحكم كامل)`,
+    ...admins.map(
+      (a, idx) => `🛡 <b>مشرف ${idx + 1}:</b> ${esc(a.name || 'أدمن')} — <code>${esc(a.id)}</code>`,
+    ),
+  ];
+
+  const rows = [
+    [{ text: '➕ إضافة أدمن جديد', callback_data: 'admin:addprompt' }],
+    ...admins.map((a) => [
+      {
+        text: `🗑 إزالة المشرف: ${a.name || a.id}`,
+        callback_data: `admin_del:${a.id}`,
+      },
+    ]),
+    [{ text: '🔙 رجوع للوحة التحكم', callback_data: 'panel:home' }],
+  ];
+
+  return {
+    text:
+      `👥 <b>إدارة المشرفين (Admins):</b>\n` +
+      `المشرفون المضافون هنا يمكنهم النشر في المدونة والتحكم الكامل بالموقع معك:\n\n` +
+      adminLines.join('\n') +
+      `\n\n💡 <i>لإضافة شخص، اضغط «➕ إضافة أدمن جديد» بالأسفل.</i>`,
+    reply_markup: { inline_keyboard: rows },
+  };
 }
 
 async function buildPostsList() {
@@ -331,7 +445,7 @@ async function buildSectionsPanel() {
 }
 
 async function buildStatsPanel() {
-  const [posts, siteConfig] = await Promise.all([readPosts(), readSiteConfig()]);
+  const [posts, siteConfig, visitData] = await Promise.all([readPosts(), readSiteConfig(), readVisitStats()]);
   const visible = posts.filter((p) => !p.hidden);
   const pinned = posts.filter((p) => p.pinned);
   const hidden = posts.filter((p) => p.hidden);
@@ -349,6 +463,9 @@ async function buildStatsPanel() {
   const text =
     `📊 <b>إحصائيات الموقع وبوابة المدونة</b>\n` +
     `━━━━━━━━━━━━━━\n` +
+    `👁️ <b>إجمالي زيارات الموقع:</b> ${visitData.visits.toLocaleString()} زيارة\n` +
+    `📈 <b>زيارات اليوم (${visitData.day}):</b> ${visitData.todayVisits.toLocaleString()} زيارة\n` +
+    `━━━━━━━━━━━━━━\n` +
     `📚 <b>إجمالي المقالات:</b> ${posts.length}\n` +
     `✅ <b>المنشورة علنياً:</b> ${visible.length}\n` +
     `📌 <b>المثبتة في الواجهة:</b> ${pinned.length}\n` +
@@ -358,6 +475,7 @@ async function buildStatsPanel() {
     `🏷 <b>الوسوم المستخدمة (${allTags.size}):</b> ${
       allTags.size ? Array.from(allTags).map((t) => `#${esc(t)}`).join(' · ') : 'لا توجد وسوم بعد'
     }\n` +
+    `👥 <b>عدد المشرفين:</b> ${(siteConfig.admins || []).length + 1}\n` +
     `🧩 <b>الأقسام الظاهرة بالموقع:</b> ${SECTIONS.length - siteConfig.hiddenSections.length}/${SECTIONS.length}\n` +
     `🕒 <b>آخر نشر:</b> ${lastDate}`;
 
@@ -365,6 +483,10 @@ async function buildStatsPanel() {
     text,
     reply_markup: {
       inline_keyboard: [
+        [
+          { text: '🔄 تحديث الإحصائيات', callback_data: 'panel:stats' },
+          { text: '👥 إدارة المشرفين', callback_data: 'panel:admins' },
+        ],
         [
           { text: '📝 إدارة المنشورات', callback_data: 'panel:posts' },
           { text: '🧩 أقسام الموقع', callback_data: 'panel:sections' },
@@ -380,15 +502,24 @@ async function handleMessage(msg) {
   const { ownerId, siteUrl } = cfg();
   const chatId = msg.chat.id;
   const fromId = String(msg.from?.id || '');
+  const text = (msg.text || msg.caption || '').trim();
+
+  // Anyone can check their Telegram ID with /id
+  if (/^\/id/.test(text)) {
+    return reply(chatId, `🆔 <b>معرّف حسابك (Telegram ID):</b>\n<code>${fromId}</code>\n\nانسخه وأرسله لمالك الموقع لإضافتك كمشرف.`);
+  }
 
   if (!ownerId) {
     return reply(chatId, `البوت لم يُربط بصاحبه بعد.\nرقم حسابك: <code>${fromId}</code>\nضعه في TELEGRAM_OWNER_ID على Vercel.`);
   }
-  if (fromId !== ownerId) {
-    return reply(chatId, 'هذا بوت خاص بإدارة موقع علي سامي 🌐\nلزيارة الموقع: ' + siteUrl);
-  }
 
-  const text = (msg.text || msg.caption || '').trim();
+  const siteConfig = await readSiteConfig();
+  if (!isAuthorizedUser(fromId, siteConfig)) {
+    return reply(
+      chatId,
+      `هذا بوت خاص بإدارة موقع علي سامي 🌐\nلزيارة الموقع: ${siteUrl}\n\n🆔 رقم حسابك (لإرساله للمالك إذا أراد إضافتك كأدمن):\n<code>${fromId}</code>`,
+    );
+  }
 
   if (/^\/(start|help)/.test(text)) {
     return reply(chatId, HELP_TEXT(fromId), {
@@ -400,6 +531,11 @@ async function handleMessage(msg) {
 
   if (/^\/panel/.test(text)) {
     const view = await buildPanelHome();
+    return reply(chatId, view.text, { reply_markup: view.reply_markup });
+  }
+
+  if (/^\/admins/.test(text)) {
+    const view = await buildAdminsPanel();
     return reply(chatId, view.text, { reply_markup: view.reply_markup });
   }
 
@@ -418,8 +554,71 @@ async function handleMessage(msg) {
     return reply(chatId, view.text, { reply_markup: view.reply_markup });
   }
 
-  // Check if replying to an edit prompt (#edit_<id>)
+  // Check if replying to #add_admin prompt
   const replySource = msg.reply_to_message?.text || msg.reply_to_message?.caption || '';
+  if (replySource.includes('#add_admin') && !text.startsWith('/')) {
+    let newAdminId = '';
+    let newAdminName = '';
+
+    if (msg.forward_from?.id) {
+      newAdminId = String(msg.forward_from.id);
+      newAdminName = [msg.forward_from.first_name, msg.forward_from.last_name].filter(Boolean).join(' ') || msg.forward_from.username || 'مشرف';
+    } else {
+      const m = text.match(/^(\d{5,15})(?:\s+(.+))?$/);
+      if (m) {
+        newAdminId = m[1];
+        newAdminName = (m[2] || 'مشرف').trim();
+      }
+    }
+
+    if (!newAdminId) {
+      return reply(
+        chatId,
+        '⚠️ لم أتمكن من قراءة الـ ID.\nأرسل الرقم فقط (مثال: <code>123456789 أحمد</code>) كـ Reply على رسالة الإضافة، أو اطلب من الشخص إرسال <code>/id</code> للبوت وانسخ رقمه.',
+      );
+    }
+
+    if (newAdminId === ownerId || (siteConfig.admins || []).some((a) => String(a.id) === newAdminId)) {
+      return reply(chatId, `ℹ️ الحساب <code>${newAdminId}</code> مضاف كمشرف بالفعل!`);
+    }
+
+    const updatedAdmins = [
+      ...(siteConfig.admins || []),
+      { id: newAdminId, name: newAdminName, addedAt: new Date().toISOString() },
+    ];
+    const updatedConfig = {
+      ...siteConfig,
+      admins: updatedAdmins,
+      updatedAt: new Date().toISOString(),
+    };
+
+    await commitFiles(
+      [{ path: SITE_CONFIG_PATH, content: JSON.stringify(updatedConfig, null, 2) + '\n' }],
+      `Site config: add admin ${newAdminId}`,
+    );
+
+    // Notify the new admin if they have started the bot
+    try {
+      await reply(
+        newAdminId,
+        `🎉 <b>تمت إضافتك كمشرف (Admin) في موقع ومدونة علي سامي!</b>\nيمكنك الآن النشر مباشرة أو إرسال /panel لفتح لوحة التحكم الكاملة.`,
+        {
+          reply_markup: {
+            inline_keyboard: [[{ text: '🎛 فتح لوحة التحكم', callback_data: 'panel:home' }]],
+          },
+        },
+      );
+    } catch {
+      /* ignore if user hasn't started bot yet */
+    }
+
+    const view = await buildAdminsPanel();
+    return reply(chatId, `✅ <b>تمت إضافة المشرف (${esc(newAdminName)} — <code>${newAdminId}</code>) بنجاح!</b>\n\n` + view.text, {
+      reply_markup: view.reply_markup,
+    });
+  }
+
+  // Check if replying to an edit prompt (#edit_<id>)
   const editMatch = replySource.match(/#edit_([\w-]+)/);
   if (editMatch && !text.startsWith('/')) {
     const editId = editMatch[1];
@@ -513,8 +712,10 @@ async function handleCallback(cb) {
   const { ownerId } = cfg();
   const chatId = cb.message?.chat.id;
   const messageId = cb.message?.message_id;
+  const fromId = String(cb.from?.id || '');
 
-  if (String(cb.from.id) !== ownerId) {
+  const siteConfig = await readSiteConfig();
+  if (!isAuthorizedUser(fromId, siteConfig)) {
     return tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'غير مسموح' });
   }
 
@@ -527,6 +728,7 @@ async function handleCallback(cb) {
     if (param === 'posts') view = await buildPostsList();
     else if (param === 'sections') view = await buildSectionsPanel();
     else if (param === 'stats') view = await buildStatsPanel();
+    else if (param === 'admins') view = await buildAdminsPanel();
     else view = await buildPanelHome();
 
     await tg('answerCallbackQuery', { callback_query_id: cb.id });
@@ -536,7 +738,43 @@ async function handleCallback(cb) {
     return;
   }
 
-  // 2. View single post control card
+  // 2. Admin management actions
+  if (action === 'admin' && param === 'addprompt') {
+    await tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'رد على الرسالة برقم الـ ID' });
+    return reply(
+      chatId,
+      `👥 <b>إضافة مشرف (أدمن) جديد</b> <code>#add_admin</code>\n` +
+        `━━━━━━━━━━━━━━\n` +
+        `اضغط <b>رد (Reply)</b> على هذه الرسالة وأرسل:\n` +
+        `• <b>الآيدي الرقمي للشخص مع اسمه</b> (مثال: <code>123456789 أحمد</code>)\n` +
+        `• أو قم <b>بإعادة توجيه (Forward)</b> رسالة منه كـ Reply على هذه الرسالة.\n\n` +
+        `💡 <i>ملاحظة: يمكن لأي شخص معرفة الـ ID الخاص به بإرسال <code>/id</code> لهذا البوت.</i>`,
+    );
+  }
+
+  if (action === 'admin_del' && param) {
+    if (fromId !== ownerId) {
+      return tg('answerCallbackQuery', { callback_query_id: cb.id, text: 'المالك الأساسي فقط يمكنه حذف المشرفين' });
+    }
+    const updatedAdmins = (siteConfig.admins || []).filter((a) => String(a.id) !== String(param));
+    const updatedConfig = {
+      ...siteConfig,
+      admins: updatedAdmins,
+      updatedAt: new Date().toISOString(),
+    };
+    await commitFiles(
+      [{ path: SITE_CONFIG_PATH, content: JSON.stringify(updatedConfig, null, 2) + '\n' }],
+      `Site config: remove admin ${param}`,
+    );
+    await tg('answerCallbackQuery', { callback_query_id: cb.id, text: '🗑 تم حذف المشرف' });
+    if (chatId && messageId) {
+      const view = await buildAdminsPanel();
+      return editMsg(chatId, messageId, view.text, { reply_markup: view.reply_markup });
+    }
+    return;
+  }
+
+  // 3. View single post control card
   if (action === 'post' && param) {
     const posts = await readPosts();
     const post = posts.find((p) => p.id === param);
@@ -549,7 +787,7 @@ async function handleCallback(cb) {
     return editMsg(chatId, messageId, formatPostSummary(post), { reply_markup: kb });
   }
 
-  // 3. Pin / Unpin post
+  // 4. Pin / Unpin post
   if (action === 'pin' && param) {
     const posts = await readPosts();
     const post = posts.find((p) => p.id === param);
@@ -571,7 +809,7 @@ async function handleCallback(cb) {
     return;
   }
 
-  // 4. Hide / Show post (Draft mode)
+  // 5. Hide / Show post (Draft mode)
   if (action === 'hide' && param) {
     const posts = await readPosts();
     const post = posts.find((p) => p.id === param);
@@ -593,7 +831,7 @@ async function handleCallback(cb) {
     return;
   }
 
-  // 5. Prompt to edit post
+  // 6. Prompt to edit post
   if (action === 'editprompt' && param) {
     const posts = await readPosts();
     const post = posts.find((p) => p.id === param);
@@ -610,7 +848,7 @@ async function handleCallback(cb) {
     );
   }
 
-  // 6. Delete post
+  // 7. Delete post
   if (action === 'del' && param) {
     const posts = await readPosts();
     const post = posts.find((p) => p.id === param);
@@ -638,15 +876,15 @@ async function handleCallback(cb) {
     return;
   }
 
-  // 7. Toggle website section visibility
+  // 8. Toggle website section visibility
   if (action === 'sec' && param) {
-    const siteConfig = await readSiteConfig();
     const set = new Set(siteConfig.hiddenSections);
     const nowHidden = !set.has(param);
     if (nowHidden) set.add(param);
     else set.delete(param);
 
     const updated = {
+      ...siteConfig,
       hiddenSections: Array.from(set),
       updatedAt: new Date().toISOString(),
     };
@@ -676,6 +914,13 @@ export default async function handler(req, res) {
   const { botToken, secret, ghToken } = cfg();
 
   if (req.method !== 'POST') {
+    const urlObj = new URL(req.url || '/', 'https://ali-sami.vercel.app');
+    if (urlObj.searchParams.get('action') === 'visit') {
+      const hit = urlObj.searchParams.get('hit') === '1';
+      const stats = await recordVisit(hit);
+      res.setHeader('Cache-Control', 'no-store, must-revalidate');
+      return res.status(200).json({ ok: true, ...stats });
+    }
     return res.status(200).json({ ok: true, service: 'aliwebsite-bot', configured: Boolean(botToken && secret && ghToken) });
   }
 

@@ -68,8 +68,10 @@ if (cmd === 'info') {
     commands: [
       { command: 'panel', description: '🎛 لوحة التحكم الشاملة بالموقع والمدونة' },
       { command: 'posts', description: '📝 إدارة المقالات (تثبيت، إخفاء، تعديل، حذف)' },
+      { command: 'admins', description: '👥 إدارة المشرفين وإضافة أدمن جديد' },
       { command: 'sections', description: '🧩 إظهار أو إخفاء أقسام الموقع' },
-      { command: 'stats', description: '📊 إحصائيات الموقع والمدونة' },
+      { command: 'stats', description: '📊 إحصائيات وزيارات الموقع والمدونة' },
+      { command: 'id', description: '🆔 معرفة معرف حسابك الرقمي' },
       { command: 'start', description: 'ℹ️ طريقة النشر والتعليمات' },
     ],
   });

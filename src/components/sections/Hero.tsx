@@ -5,13 +5,13 @@ import { useSiteConfig } from '../../context/SiteConfig';
 import { heroRoles, heroDescription, heroHighlights } from '../../data/content';
 import { NetworkCanvas } from '../background/NetworkCanvas';
 import { SocialIcon } from '../ui/SocialIcon';
-import { ArrowUpRight, ChevronDown, MapPin, Newspaper, Sparkles } from 'lucide-react';
+import { ArrowUpRight, ChevronDown, Eye, MapPin, Newspaper, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { LogoMark } from '../brand/Logo';
 
 export function Hero() {
   const { lang, t, tr } = usePrefs();
-  const { openBlogHub, isSectionVisible } = useSiteConfig();
+  const { openBlogHub, isSectionVisible, visits } = useSiteConfig();
   const [roleIndex, setRoleIndex] = useState(0);
 
   // Cycling animated roles headline
@@ -31,21 +31,32 @@ export function Hero() {
         <div className="hero-grid">
           {/* Main content column */}
           <div className="hero-content">
-            {/* Status indicator / location badge */}
+            {/* Status indicator / location badge + Live Visits */}
             <motion.div
-              className="hero-badge"
+              className="hero-badges-row"
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
             >
-              <span className="status-ping" aria-hidden="true">
-                <span className="ping-circle" />
-                <span className="ping-dot" />
-              </span>
-              <span className="badge-text">
-                <MapPin size={14} className="badge-icon text-electric" />
-                {t.hero.status}: {tr(site.locationShort)}
-              </span>
+              <div className="hero-badge">
+                <span className="status-ping" aria-hidden="true">
+                  <span className="ping-circle" />
+                  <span className="ping-dot" />
+                </span>
+                <span className="badge-text">
+                  <MapPin size={14} className="badge-icon text-electric" />
+                  {t.hero.status}: {tr(site.locationShort)}
+                </span>
+              </div>
+
+              {visits !== null && (
+                <div className="hero-badge hero-visits-badge" title={t.footer.visits}>
+                  <Eye size={14} className="badge-icon text-electric" />
+                  <span className="badge-text">
+                    {t.footer.visits}: <strong>{visits.toLocaleString()}</strong>
+                  </span>
+                </div>
+              )}
             </motion.div>
 
             {/* Main Greeting & Names */}

@@ -12,6 +12,7 @@ interface SiteConfigContextValue {
   activePostId: string | null;
   openBlogHub: (postId?: string) => void;
   closeBlogHub: () => void;
+  visits: number | null;
 }
 
 const SiteConfigContext = createContext<SiteConfigContextValue>({
@@ -21,12 +22,14 @@ const SiteConfigContext = createContext<SiteConfigContextValue>({
   activePostId: null,
   openBlogHub: () => {},
   closeBlogHub: () => {},
+  visits: null,
 });
 
 export function SiteConfigProvider({ children }: { children: ReactNode }) {
   const [hiddenSections, setHiddenSections] = useState<string[]>([]);
   const [blogHubOpen, setBlogHubOpen] = useState(false);
   const [activePostId, setActivePostId] = useState<string | null>(null);
+  const [visits, setVisits] = useState<number | null>(null);
 
   useEffect(() => {
     let alive = true;
@@ -38,6 +41,17 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         }
       })
       .catch(() => {});
+
+    // Record visit & get live counter
+    fetch(`/api/telegram?action=visit&hit=1&t=${Date.now()}`, { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((data) => {
+        if (alive && typeof data?.visits === 'number') {
+          setVisits(data.visits);
+        }
+      })
+      .catch(() => {});
+
     return () => {
       alive = false;
     };
@@ -96,6 +110,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
         activePostId,
         openBlogHub,
         closeBlogHub,
+        visits,
       }}
     >
       {children}
@@ -106,4 +121,3 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
 export function useSiteConfig() {
   return useContext(SiteConfigContext);
 }
-

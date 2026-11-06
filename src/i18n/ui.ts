@@ -63,6 +63,18 @@ const ar = {
     termFocus: 'الاهتمامات',
     copyCode: 'نسخ الكود',
     copiedCode: 'تم النسخ',
+    runCode: 'تشغيل الكود',
+    stopCode: 'إغلاق المحاكي',
+    runningTitle: 'مختبر النظام التفاعلي الحي — Live Execution',
+    tabNeural: '🧠 المحرك العصبي AI',
+    tabRadar: '📡 رادار شبكة البراكية',
+    tabCli: '💻 أوامر النظام',
+    firePulse: '⚡ إطلاق نبضة ذكاء اصطناعي',
+    boostSignal: '🚀 فحص السرعة الفائقة',
+    canvasHint: 'اضغط أو حرّك المؤشر داخل الشبكة لإطلاق نبضات عصبية حية!',
+    accuracyLabel: 'الدقة العصبية',
+    nodesLabel: 'العُقد النشطة',
+    latencyLabel: 'زمن الاستجابة',
   },
   services: {
     eyebrow: 'الخدمات',
@@ -171,6 +183,7 @@ const ar = {
     location: 'الموقع',
     rights: 'جميع الحقوق محفوظة.',
     madeWith: 'صُمّم وطُوّر بعناية',
+    visits: 'زيارات الموقع',
   },
 };
 
@@ -235,6 +248,18 @@ const en: UIStrings = {
     termFocus: 'focus',
     copyCode: 'Copy code',
     copiedCode: 'Copied',
+    runCode: 'Run code',
+    stopCode: 'Close simulator',
+    runningTitle: 'Interactive System Sandbox — Live Execution',
+    tabNeural: '🧠 AI Neural Core',
+    tabRadar: '📡 Al-Barakiya Radar',
+    tabCli: '💻 System CLI',
+    firePulse: '⚡ Fire Neural Pulse',
+    boostSignal: '🚀 Turbo Speed Test',
+    canvasHint: 'Click or move cursor inside the matrix to fire live neural pulses!',
+    accuracyLabel: 'Neural Accuracy',
+    nodesLabel: 'Active Nodes',
+    latencyLabel: 'Latency',
   },
   services: {
     eyebrow: 'Services',
@@ -343,6 +368,7 @@ const en: UIStrings = {
     location: 'Location',
     rights: 'All rights reserved.',
     madeWith: 'Designed & built with care',
+    visits: 'Site visits',
   },
 };
 

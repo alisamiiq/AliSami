@@ -1,11 +1,13 @@
 import { site } from '../../config/site';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { SocialIcon } from '../ui/SocialIcon';
 import { Logo } from '../brand/Logo';
-import { ArrowUp, MapPin } from 'lucide-react';
+import { ArrowUp, Eye, MapPin } from 'lucide-react';
 
 export function Footer() {
   const { t, tr } = usePrefs();
+  const { visits } = useSiteConfig();
   const currentYear = new Date().getFullYear();
 
   const scrollToTop = () => {
@@ -65,6 +67,14 @@ export function Footer() {
             © {currentYear} {site.brand} — {site.brandTagline}. {t.footer.rights}
           </p>
           <div className="footer-actions">
+            {visits !== null && (
+              <div className="visitor-counter-badge" title={t.footer.visits}>
+                <span className="visitor-pulse-dot" aria-hidden="true" />
+                <Eye size={15} className="text-electric" />
+                <span>{t.footer.visits}:</span>
+                <strong>{visits.toLocaleString()}</strong>
+              </div>
+            )}
             <button
               type="button"
               className="back-to-top-btn"
