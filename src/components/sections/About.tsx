@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { site } from '../../config/site';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { aboutText, interests } from '../../data/content';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Reveal } from '../ui/Reveal';
@@ -30,6 +31,7 @@ interface Shockwave {
 
 export function About() {
   const { t, tr, lang } = usePrefs();
+  const { sectionIndex } = useSiteConfig();
   const showToast = useToast();
   const [copied, setCopied] = useState(false);
 
@@ -491,7 +493,7 @@ export function About() {
     <section id="about" className="section-padding about-section" data-float-scale="0.95">
       <div className="container">
         <SectionHeader
-          index="01"
+          index={sectionIndex('about')}
           eyebrow={t.about.eyebrow}
           title={t.about.title}
           lead={t.about.lead}

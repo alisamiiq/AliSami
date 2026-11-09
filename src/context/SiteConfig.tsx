@@ -8,6 +8,7 @@ export interface SiteConfigData {
 interface SiteConfigContextValue {
   hiddenSections: string[];
   isSectionVisible: (sectionId: string) => boolean;
+  sectionIndex: (sectionId: string) => string;
   blogHubOpen: boolean;
   activePostId: string | null;
   openBlogHub: (postId?: string) => void;
@@ -15,9 +16,12 @@ interface SiteConfigContextValue {
   visits: number | null;
 }
 
+const SECTION_ORDER = ['about', 'services', 'work', 'studies', 'internet', 'blog', 'contact'];
+
 const SiteConfigContext = createContext<SiteConfigContextValue>({
   hiddenSections: [],
   isSectionVisible: () => true,
+  sectionIndex: (id) => String(SECTION_ORDER.indexOf(id) + 1).padStart(2, '0'),
   blogHubOpen: false,
   activePostId: null,
   openBlogHub: () => {},
@@ -59,6 +63,16 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
 
   const isSectionVisible = useCallback(
     (sectionId: string) => !hiddenSections.includes(sectionId),
+    [hiddenSections],
+  );
+
+  // Section numbers follow the visible sections only (no gaps when one is hidden from the bot)
+  const sectionIndex = useCallback(
+    (sectionId: string) => {
+      const visible = SECTION_ORDER.filter((id) => !hiddenSections.includes(id));
+      const pos = visible.indexOf(sectionId);
+      return String((pos === -1 ? SECTION_ORDER.indexOf(sectionId) : pos) + 1).padStart(2, '0');
+    },
     [hiddenSections],
   );
 
@@ -106,6 +120,7 @@ export function SiteConfigProvider({ children }: { children: ReactNode }) {
       value={{
         hiddenSections,
         isSectionVisible,
+        sectionIndex,
         blogHubOpen,
         activePostId,
         openBlogHub,

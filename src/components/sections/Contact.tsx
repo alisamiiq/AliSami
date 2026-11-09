@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { site, whatsappLink } from '../../config/site';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { onContactTopic } from '../../lib/contactTopic';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Reveal } from '../ui/Reveal';
@@ -10,6 +11,7 @@ import { ArrowUpRight, MessageSquare, Sparkles } from 'lucide-react';
 
 export function Contact() {
   const { t, tr } = usePrefs();
+  const { sectionIndex } = useSiteConfig();
   const showToast = useToast();
 
   const [topic, setTopic] = useState('');
@@ -58,7 +60,7 @@ export function Contact() {
     <section id="contact" className="section-padding contact-section" data-float-scale="1.0">
       <div className="container">
         <SectionHeader
-          index="07"
+          index={sectionIndex('contact')}
           eyebrow={t.contact.eyebrow}
           title={t.contact.title}
           lead={t.contact.lead}

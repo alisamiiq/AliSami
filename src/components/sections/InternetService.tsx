@@ -1,5 +1,6 @@
 import { site, whatsappLink } from '../../config/site';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { internetFeatures } from '../../data/content';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Reveal } from '../ui/Reveal';
@@ -8,6 +9,7 @@ import { MapPin, Clock, Phone, ExternalLink, ShieldCheck } from 'lucide-react';
 
 export function InternetService() {
   const { t, tr } = usePrefs();
+  const { sectionIndex } = useSiteConfig();
 
   const directWhatsapp = whatsappLink(t.internet.whatsappMessage);
   const telegramLink = site.social.find((s) => s.id === 'telegram')?.url || '#';
@@ -16,7 +18,7 @@ export function InternetService() {
     <section id="internet" className="section-padding internet-section" data-float-scale="1.0">
       <div className="container">
         <SectionHeader
-          index="05"
+          index={sectionIndex('internet')}
           eyebrow={t.internet.eyebrow}
           title={t.internet.title}
           lead={t.internet.lead}

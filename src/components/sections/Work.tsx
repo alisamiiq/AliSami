@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { projects, projectCategories, type Project, type ProjectCategory } from '../../data/content';
 import { SectionHeader } from '../ui/SectionHeader';
 import { SocialIcon } from '../ui/SocialIcon';
@@ -15,6 +16,7 @@ const categoryCovers: Record<ProjectCategory, string> = {
 
 export function Work() {
   const { t, tr } = usePrefs();
+  const { sectionIndex } = useSiteConfig();
   const [activeCategory, setActiveCategory] = useState<'all' | ProjectCategory>('all');
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
 
@@ -27,7 +29,7 @@ export function Work() {
     <section id="work" className="section-padding work-section" data-float-scale="1.05">
       <div className="container">
         <SectionHeader
-          index="03"
+          index={sectionIndex('work')}
           eyebrow={t.work.eyebrow}
           title={t.work.title}
           lead={t.work.lead}

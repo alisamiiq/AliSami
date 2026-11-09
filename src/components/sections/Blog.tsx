@@ -73,7 +73,7 @@ function PostBody({ text }: { text: string }) {
 
 export function Blog() {
   const { t, lang } = usePrefs();
-  const { isSectionVisible, blogHubOpen, activePostId, openBlogHub, closeBlogHub } = useSiteConfig();
+  const { isSectionVisible, sectionIndex, blogHubOpen, activePostId, openBlogHub, closeBlogHub } = useSiteConfig();
   const showToast = useToast();
 
   const [rawPosts, setRawPosts] = useState<Post[] | null>(null);
@@ -210,7 +210,7 @@ export function Blog() {
               {/* Gateway Left / Start Info */}
               <div className="blog-gateway-info">
                 <div className="blog-gateway-eyebrow">
-                  <span className="section-index">06</span>
+                  <span className="section-index">{sectionIndex('blog')}</span>
                   <span className="eyebrow-divider" />
                   <Sparkles size={14} className="blog-gateway-sparkle" />
                   <span>{t.blog.eyebrow}</span>

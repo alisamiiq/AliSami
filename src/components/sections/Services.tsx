@@ -1,4 +1,5 @@
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { services } from '../../data/content';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Reveal } from '../ui/Reveal';
@@ -7,6 +8,7 @@ import { ArrowUpRight } from 'lucide-react';
 
 export function Services() {
   const { t, tr } = usePrefs();
+  const { sectionIndex } = useSiteConfig();
 
   const handleRequestService = (serviceTitle: string) => {
     requestContactTopic(serviceTitle);
@@ -16,7 +18,7 @@ export function Services() {
     <section id="services" className="section-padding services-section" data-float-scale="1.0">
       <div className="container">
         <SectionHeader
-          index="02"
+          index={sectionIndex('services')}
           eyebrow={t.services.eyebrow}
           title={t.services.title}
           lead={t.services.lead}

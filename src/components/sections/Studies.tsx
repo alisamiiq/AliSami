@@ -1,5 +1,6 @@
 import { site } from '../../config/site';
 import { usePrefs } from '../../context/Preferences';
+import { useSiteConfig } from '../../context/SiteConfig';
 import { focusAreas, technologies } from '../../data/content';
 import { SectionHeader } from '../ui/SectionHeader';
 import { Reveal } from '../ui/Reveal';
@@ -7,12 +8,13 @@ import { GraduationCap, BookOpen, Layers, CheckCircle } from 'lucide-react';
 
 export function Studies() {
   const { t, tr } = usePrefs();
+  const { sectionIndex } = useSiteConfig();
 
   return (
     <section id="studies" className="section-padding studies-section" data-float-scale="0.95">
       <div className="container">
         <SectionHeader
-          index="04"
+          index={sectionIndex('studies')}
           eyebrow={t.studies.eyebrow}
           title={t.studies.title}
           lead={t.studies.lead}
