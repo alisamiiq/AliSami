@@ -65,7 +65,7 @@ npm run build
 
 - **الموقع الرسمي:** [ali-sami.vercel.app](https://ali-sami.vercel.app)
 - **تيليجرام:** [@AliSamii_mu](https://t.me/AliSamii_mu)
-- **إنستغرام:** [@bc..9](https://www.instagram.com/bc..9)
+- **فيسبوك:** [AliSamii.mu](https://www.facebook.com/AliSamii.mu)
 - **واتساب:** [تواصل مباشر](https://wa.me/bc.9)
 - **GitHub:** [@alisamiiq](https://github.com/alisamiiq)
 
